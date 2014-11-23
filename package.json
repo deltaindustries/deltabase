@@ -9,6 +9,16 @@
   },
   "scripts": {
     "start": "node server",
-    "test": "node server"
+    "test": "mocha --compilers coffee:coffee-script/register"
+  },
+  "dependencies": {
+    "async": "^0.9.0",
+    "connect-coffee-script": "^0.2.0",
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.8.0",
+    "mocha": "^2.0.1",
+    "should": "^4.3.0"
   }
 }
