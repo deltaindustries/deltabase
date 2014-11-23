@@ -1,0 +1,14 @@
+{
+  "name": "deltaengine",
+  "description": "Delta Engine",
+  "version": "0.0.1",
+  "author": "P Hurst",
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.4.x"
+  },
+  "scripts": {
+    "start": "node server",
+    "test": "node server"
+  }
+}
