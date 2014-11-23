@@ -12,7 +12,7 @@ Some aims:
 fs = require('fs')
 path = require('path')
 
-module.exports = (options)->
+create = (options = {})->
   dbpath = options.path ? 'data'
   docpath = path.join(dbpath, 'docs')
   indexpath = path.join(dbpath, 'indices')
@@ -78,7 +78,9 @@ module.exports = (options)->
       # Create a new document
     unset: (id, callback)->
       # Remove and unindex a document
-    update: (id, updates, )
+    update: (id, updates, callback)->
 
 
   db
+
+module.exports = create
