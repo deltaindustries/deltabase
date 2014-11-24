@@ -11,6 +11,7 @@ Some aims:
 
 fs = require('fs')
 path = require('path')
+_ = require('lodash')
 
 create = (options = {})->
   dbpath = options.path ? 'data'
@@ -92,6 +93,8 @@ create = (options = {})->
       # Construct an advanced query (chainable)
     set: (id, doc, callback)->
       # Create a new document
+      if !_.isString(id)
+        return callback(new Error('Document id must be a string, got: ' + id + ' (' + typeof id + ')'))
       text = JSON.stringify(doc)
       $meta = 
         revision: 1

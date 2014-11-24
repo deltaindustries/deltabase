@@ -2,6 +2,7 @@ deltabase = require('../lib/db/DeltaBase')
 fs = require('fs')
 should = require('should')
 path = require('path')
+async = require('async')
 
 # Recursive directory removal lib. Somewhat dangerous in prod hence restricted to
 # dev dependencies. But pretty useful for tearing down data folders after fixtures.
@@ -84,13 +85,39 @@ describe "DeltaBase", ()->
           err.should.be.ok
           done()
 
-  # TODO: Test revision bumping
-  ###
+    # The following is a safety precaution. Accidentally omitting the key or using something you
+    # didn't mean to shouldn't result in unintended behaviour.
+    it 'should fail to set a doc with a complex key', (done)->
+      db.set testDoc, testDoc, (err, result)->
+        err.should.be.ok
+        done()
+
+    # TODO: Test revision bumping
   describe "#get()", ()->
     beforeEach (done)->
       initTestDb ()->
+        # Make some test docs
+        docs = [
+          [ "1", { foo: "bar1", } ],
+          [ "2", { foo: "bar2", } ],
+          [ "3", { foo: "bar3", } ]
+        ]
+        async.each docs, (doc, cb)->
+          db.set(doc[0], doc[1], (err, result)->
+            if err
+              throw err
+            cb()
+          )
+        , ()->
+          done()
 
     afterEach destroyTestDb
-      db = deltabase({path: testDbPath })
-      done()
-  ###
+
+    it 'should get a doc by arbitrary id', (done)->
+      db.get "2", (err, result)->
+        if err
+          throw err
+        result.should.be.ok
+        result.foo.should.equal('bar2')
+        done()
+
