@@ -26,12 +26,12 @@ describe "DeltaBase", ()->
 
     it 'should create a new database', ()->
       db = deltabase()
-      db.should.be.ok
+      db.should.exist()
       fs.existsSync('data').should.equal.true
 
     it 'should create a new database in a named path', ()->
       db = deltabase({path: testDbPath})
-      db.should.be.ok
+      db.should.exist()
       fs.existsSync('data').should.equal.false
       fs.existsSync('testdb').should.equal.true
 
@@ -61,7 +61,7 @@ describe "DeltaBase", ()->
       db.set '1', testDoc, (err, result)->
         if (err)
           throw err
-        result.$meta.should.be.ok
+        result.$meta.should.exist()
         result.$meta.filepath.should.equal(path.join(testDbPath, 'docs', '1', '1.json'))
         fs.readFile result.$meta.filepath, (err, result)->
           if (err)
@@ -83,17 +83,17 @@ describe "DeltaBase", ()->
         db.set '1', testDoc, (err, result)->
           # TODO: Should check for specific error message?
           # TODO: Should double check that file contents weren't changed and index hasn't been overwritten?
-          err.should.be.ok
+          err.should.exist()
           done()
 
     # The following is a safety precaution. Accidentally omitting the key or using something you
     # didn't mean to shouldn't result in unintended behaviour.
     it 'should fail to set a doc with a complex key', (done)->
       db.set testDoc, testDoc, (err, result)->
-        err.should.be.ok
+        err.should.exist()
         done()
 
-    # TODO: Test revision bumping
+    # TODO: Test revision bumping (will be on update...)
   describe "#get()", ()->
     beforeEach (done)->
       initTestDb ()->
@@ -121,4 +121,3 @@ describe "DeltaBase", ()->
         result.should.exist
         result.foo.should.equal('bar2')
         done()
-
