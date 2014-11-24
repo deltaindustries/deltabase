@@ -14,13 +14,13 @@ path = require('path')
 
 create = (options = {})->
   dbpath = options.path ? 'data'
-  docpath = path.join(dbpath, 'docs')
+  docspath = path.join(dbpath, 'docs')
   indexpath = path.join(dbpath, 'indices')
   # Initialize a new database
   # 
   if !fs.existsSync(dbpath)
     fs.mkdirSync(dbpath)
-    fs.mkdirSync(docpath)
+    fs.mkdirSync(docspath)
     fs.mkdirSync(indexpath)
 
   # Primary index of doc ids
@@ -66,9 +66,25 @@ create = (options = {})->
 
   addToIndex = (id, doc)->
     index[id] = doc
-    spiderIndicies(indicies)
+    spiderIndicies(indices)
 
   queryApi = (db)->
+
+  filePathForDoc = (id, doc, callback)->
+    docpath = path.join(docspath, id)
+    rev = 1
+    filepath = path.join(docpath, rev + ".json")
+
+    # Check if document folder exists and create if not
+    # TODO: Start keeping a list of docpaths so don't have to perform this fs exists for every op
+    # ... in fact only ever need to create the docpath with a 'set' op
+    fs.exists docpath, (result)->
+      if result
+        return callback(null, filepath)
+      fs.mkdir docpath, (err, result)->
+        if err
+          return callback(err)
+        callback(null, filepath)
 
   db = 
     get: (id, callback)->
@@ -76,6 +92,24 @@ create = (options = {})->
       # Construct an advanced query (chainable)
     set: (id, doc, callback)->
       # Create a new document
+      text = JSON.stringify(doc)
+      $meta = 
+        revision: 1
+      filePathForDoc id, doc, (err, filePath)->
+        if err
+          return callback(err)
+        $meta.filepath = filePath
+        doc.$meta = $meta
+        fs.exists filePath, (result)->
+          if result
+            return callback(new Error('Document already exists with id: "' + id + '"'))
+          fs.writeFile filePath, text, (err)->
+            if err
+              return callback(err)
+            addToIndex(id, doc)
+            # TODO: Should result include more metadata about the item ... e.g. revision numbers ... file path ... etc.
+            callback(null, doc)
+
     unset: (id, callback)->
       # Remove and unindex a document
     update: (id, updates, callback)->

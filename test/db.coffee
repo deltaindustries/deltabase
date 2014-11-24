@@ -1,6 +1,7 @@
 deltabase = require('../lib/db/DeltaBase')
 fs = require('fs')
 should = require('should')
+path = require('path')
 
 # Recursive directory removal lib. Somewhat dangerous in prod hence restricted to
 # dev dependencies. But pretty useful for tearing down data folders after fixtures.
@@ -11,10 +12,11 @@ rmdir = require('rimraf')
 describe "DeltaBase", ()->
 
   testDbPath = 'testdb'
+  db = null
 
   describe "#()", ()->
 
-    # Highly hazardous code follows...
+    # Highly hazardous code following...
     afterEach (done)->
       rmdir('data', ()->
         rmdir(testDbPath, done)
@@ -24,31 +26,71 @@ describe "DeltaBase", ()->
       db = deltabase()
       db.should.be.ok
       fs.existsSync('data').should.equal.true
+
     it 'should create a new database in a named path', ()->
       db = deltabase({path: testDbPath})
       db.should.be.ok
       fs.existsSync('data').should.equal.false
       fs.existsSync('testdb').should.equal.true
 
-  describe "#set()", ()->
-    db = null
-    beforeEach (done)->
-      # TODO: Eventually, a zipped-up test database complete with indicies is probably the way to
-      # go for more complex test scenarios
-      db = deltabase({path: testDbPath})
-      done()
+  testDoc = null
 
+  initTestDb = (done)->
+
+    # TODO: Eventually, a zipped-up test database complete with indicies is probably the way to
+    # go for more complex test scenarios
+    db = deltabase({path: testDbPath})
     testDoc = { foo: 'bar' }
+    done()
 
-    it 'should store a document without error', (done)->
-      db.set '1', testDoc, (err, result)->
-        err.should.not.be.ok
-        result.should.be.ok
-
-  describe "#get()", ()->
+  destroyTestDb = (done)->
+    # More hazard...
     db = null
+    rmdir(testDbPath, done)
+
+  describe "#set()", ()->
+    beforeEach initTestDb
+    afterEach destroyTestDb
+
+    it 'should create a document without error', (done)->
+      db.set '1', testDoc, done
+
+    it 'should store the document in the file system and provide metadata', (done)->
+      db.set '1', testDoc, (err, result)->
+        if (err)
+          throw err
+        result.$meta.should.be.ok
+        result.$meta.filepath.should.equal(path.join(testDbPath, 'docs', '1', '1.json'))
+        fs.readFile result.$meta.filepath, (err, result)->
+          if (err)
+            throw err
+          result.toString().should.equal '{"foo":"bar"}'
+          done()
+
+    it 'should assign a revision number of 1 to a new document', (done)->
+      db.set '1', testDoc, (err, result)->
+        if (err)
+          throw err
+        result.$meta.revision.should.equal(1)
+        done()
+
+    it 'should fail to overwrite a doc with the same id', (done)->
+      db.set '1', testDoc, (err, result)->
+        if (err)
+          throw err
+        db.set '1', testDoc, (err, result)->
+          # TODO: Should check for specific error message?
+          # TODO: Should double check that file contents weren't changed and index hasn't been overwritten?
+          err.should.be.ok
+          done()
+
+  # TODO: Test revision bumping
+  ###
+  describe "#get()", ()->
     beforeEach (done)->
-      # TODO: Eventually, a zipped-up test database complete with indicies is probably the way to
-      # go for more complex test scenarios
+      initTestDb ()->
+
+    afterEach destroyTestDb
       db = deltabase({path: testDbPath })
       done()
+  ###
