@@ -14,6 +14,7 @@ describe "Delta.Web", ()->
 
   describe "#run()", ()->
 
+    ###
     it 'should start a web server', (done)->
       delta.run({ app: 'test/apps/delta_web'}, done)
 
@@ -37,3 +38,4 @@ describe "Delta.Web", ()->
     it 'should include a style sheet'
     it 'should compile and include a Stylus file'
     # TODO: Separate test for styl compilation
+    ###

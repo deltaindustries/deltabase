@@ -72,6 +72,9 @@ create = (options = {})->
   queryApi = (db)->
 
   filePathForDoc = (id, doc, callback)->
+    if _.isFunction(doc)
+      callback = doc
+
     docpath = path.join(docspath, id)
     rev = 1
     filepath = path.join(docpath, rev + ".json")
@@ -88,9 +91,6 @@ create = (options = {})->
         callback(null, filepath)
 
   db = 
-    get: (id, callback)->
-    query: (options)->
-      # Construct an advanced query (chainable)
     set: (id, doc, callback)->
       # Create a new document
       if !_.isString(id)
@@ -113,10 +113,44 @@ create = (options = {})->
             # TODO: Should result include more metadata about the item ... e.g. revision numbers ... file path ... etc.
             callback(null, doc)
 
+    get: (id, callback)->
+      if !_.isString(id)
+        return callback(new Error('Document id must be a string, got: ' + id + ' (' + typeof id + ')'))
+      if index[id]?
+        return callback(null, index[id])
+      # Otherwise try to load from fs
+      # TODO: This results in folders being created for non-existent Ids, even though a document
+      # isn't created.
+      filePathForDoc id, (err, filePath)->
+        if err
+          return callback(err)
+        fs.readFile filePath, (err, result)->
+          if err
+            return callback(err)
+          # Parse result
+          # TODO: Test for corrupt file behaviour, add try/catch
+          doc = JSON.parse(result.toString())
+          doc.$meta =
+            revision: 1
+            filepath: filePath
+          # Store doc in indices
+          addToIndex(id, doc)
+          callback(null, doc)
+
     unset: (id, callback)->
       # Remove and unindex a document
     update: (id, updates, callback)->
+      # Update some fields. Reindex the doc (remove then add back to index)
 
+    query: (options)->
+      # Construct an advanced query (chainable)
+
+    lock: (id, callback)->
+      # Get a lock on an object. Should be released as quickly as possible. This guarantees that
+      # no other server will modify the doc while you are working with it. TODO: Could deep clone an instance
+      # to ensure that not even another async process will modify fields unexpectedly. Maybe a "snapshot"
+      # command could be used for this. The lesson is to only ever hold onto DB objects for as short a time
+      # as possible!
 
   db
 
