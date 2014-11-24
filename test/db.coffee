@@ -1,6 +1,7 @@
 deltabase = require('../lib/db/DeltaBase')
 fs = require('fs')
-should = require('should')
+chai = require('chai')
+chai.should()
 path = require('path')
 async = require('async')
 
@@ -117,7 +118,7 @@ describe "DeltaBase", ()->
       db.get "2", (err, result)->
         if err
           throw err
-        result.should.be.ok
+        result.should.exist
         result.foo.should.equal('bar2')
         done()
 

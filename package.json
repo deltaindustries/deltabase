@@ -17,9 +17,9 @@
     "lodash": "^2.4.1"
   },
   "devDependencies": {
+    "chai": "^1.10.0",
     "coffee-script": "^1.8.0",
     "mocha": "^2.0.1",
-    "rimraf": "^2.2.8",
-    "should": "^4.3.0"
+    "rimraf": "^2.2.8"
   }
 }
