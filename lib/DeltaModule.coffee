@@ -1,4 +1,4 @@
-events = require('events')
+AsyncEventEmitter = require('async-eventemitter')
 
 class DeltaDescriptor
   constructor: (@module)->
@@ -19,7 +19,7 @@ class DeltaDescriptor
     @module.on(name, callback)
     @
 
-class DeltaModule extends events.EventEmitter
+class DeltaModule extends AsyncEventEmitter
 
   name: ""
   description: ""

@@ -5,19 +5,43 @@ Tests for delta web server
 fs = require('fs')
 chai = require('chai')
 chai.should()
+expect = chai.expect
 path = require('path')
 async = require('async')
-
-delta = require('../lib/Delta')
+Delta = require('../lib/Delta')
 
 describe "Delta.Web", ()->
 
-  describe "#run()", ()->
+  describe "server", ()->
+
+    didListen = false
+    didClose = false
+
+    beforeEach(()->
+      expressListen = express.listen
+      express.listen = ()->
+        didListen = true
+        expressListen.call(arguments)
+      expressClose
+    )
+
+    afterEach(()->
+      didListen = false
+      didClose = false
+      express.listen = exprssListen
+    )
+
+    it 'should start a web server', (done)->
+      Delta({ app: 'test/apps/delta_web'}).run done
+
+    it 'should close the web server when app ends', (done)->
+      delta = Delta({ app: 'test/apps/delta_web'})
+      delta.run((err, result)->
+        expect(err).to.not.exist
+        delta.end done
+      )
 
     ###
-    it 'should start a web server', (done)->
-      delta.run({ app: 'test/apps/delta_web'}, done)
-
     it 'should serve an index page', (done)->
       # Configure an app
       # Create a home page doc (autocreated, testable by content module)
