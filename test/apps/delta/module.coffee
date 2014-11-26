@@ -1,2 +1,4 @@
 module.exports = (module)->
-  module.hasConfigured = true
+  module.on('test', (e)->
+    @passed = true
+  )

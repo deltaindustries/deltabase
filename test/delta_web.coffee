@@ -14,32 +14,29 @@ describe "Delta.Web", ()->
 
   describe "server", ()->
 
-    didListen = false
-    didClose = false
+    # TODO: Next two tests aren't actually checking the things they say they're checking
 
-    beforeEach(()->
-      expressListen = express.listen
-      express.listen = ()->
-        didListen = true
-        expressListen.call(arguments)
-      expressClose
-    )
-
-    afterEach(()->
-      didListen = false
-      didClose = false
-      express.listen = exprssListen
-    )
-
-    it 'should start a web server', (done)->
+    ###
+    it 'should start up a web server', (done)->
       Delta({ app: 'test/apps/delta_web'}).run done
-
-    it 'should close the web server when app ends', (done)->
+    ###
+    it 'should start up and shut down the web server when app ends', (done)->
       delta = Delta({ app: 'test/apps/delta_web'})
       delta.run((err, result)->
         expect(err).to.not.exist
         delta.end done
       )
+  # TODO: Test two server instances running simultaneously on separate ports
+
+  describe "requests", ()->
+
+    delta = null
+    beforeEach (done)->
+      delta = Delta({ app: 'test/apps/delta_web'})
+        .run done
+
+    afterEach (done)->
+      delta.end done
 
     ###
     it 'should serve an index page', (done)->
