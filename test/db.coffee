@@ -1,4 +1,4 @@
-deltabase = require('../lib/db/DeltaBase')
+deltabase = require('../lib/DeltaBase')
 fs = require('fs')
 chai = require('chai')
 chai.should()
