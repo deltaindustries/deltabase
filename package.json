@@ -1,6 +1,6 @@
 {
-  "name": "deltaengine",
-  "description": "Delta Engine",
+  "name": "deltabase",
+  "description": "DeltaBase NoSQL",
   "version": "0.0.1",
   "author": "P Hurst",
   "engines": {
