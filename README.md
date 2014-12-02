@@ -201,6 +201,10 @@ depending on what makes sense at the time.
 Changelog
 ---------
 
+0.0.9 - Added update() method.
+
+0.0.8 - Added exists() and unset() methods.
+
 0.0.7 - First usable version with get/set operations only.
 
 Website and Support

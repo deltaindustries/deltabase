@@ -71,48 +71,48 @@ describe("DeltaBase", function() {
     });
 
     it('should store the document in the file system and provide metadata', function(done) {
-      return db.set('1', testDoc, function(err, result) {
+      db.set('1', testDoc, function(err, result) {
         if (err) {
           throw err;
         }
         result.$meta.should.exist();
         result.$meta.filepath.should.equal(path.join(testDbPath, docsPath, '1', '1.json'));
-        return fs.readFile(result.$meta.filepath, function(err, result) {
+        fs.readFile(result.$meta.filepath, function(err, result) {
           if (err) {
             throw err;
           }
           result.toString().should.equal('{"foo":"bar"}');
-          return done();
+          done();
         });
       });
     });
 
     it('should assign a revision number of 1 to a new document', function(done) {
-      return db.set('1', testDoc, function(err, result) {
+      db.set('1', testDoc, function(err, result) {
         if (err) {
           throw err;
         }
         result.$meta.revision.should.equal(1);
-        return done();
+        done();
       });
     });
 
     it('should fail to overwrite a doc with the same id', function(done) {
-      return db.set('1', testDoc, function(err, result) {
+      db.set('1', testDoc, function(err, result) {
         if (err) {
           throw err;
         }
-        return db.set('1', testDoc, function(err, result) {
+        db.set('1', testDoc, function(err, result) {
           err.should.exist();
-          return done();
+          done();
         });
       });
     });
 
     it('should fail to set a doc with a complex key', function(done) {
-      return db.set(testDoc, testDoc, function(err, result) {
+      db.set(testDoc, testDoc, function(err, result) {
         err.should.exist();
-        return done();
+        done();
       });
     });
 
@@ -133,7 +133,7 @@ describe("DeltaBase", function() {
             if (err) {
               return cb(err);
             }
-            return cb();
+            cb();
           });
         }, function(err) {
           done(err);
@@ -148,7 +148,7 @@ describe("DeltaBase", function() {
         }
         result.should.exist;
         result.foo.should.equal('bar2');
-        return done();
+        done();
       });
     });
 
@@ -177,7 +177,7 @@ describe("DeltaBase", function() {
           result.$meta.should.exist();
           result.$meta.revision.should.equal(1);
           result.$meta.filepath.should.equal(path.join(testDbPath, docsPath, '2', '1.json'));
-          return done();
+          done();
         });
       });
     });
@@ -237,6 +237,26 @@ describe("DeltaBase", function() {
 
   describe('#update()', function(){
     beforeEach(initTestDb);
+
+    it('should update an existing item', function(done) {
+      db.set('test', {foo:'bar'}, function(err,result){
+        db.update('test', {bar:'baz'}, function(err,result){
+          db.get('test', function(err, result) {
+            result.foo.should.equal('bar');
+            result.bar.should.equal('baz');
+            fs.readFile(result.$meta.filepath, function(err, result) {
+              if (err) {
+                throw err;
+              }
+              result.toString().should.equal('{"foo":"bar","bar":"baz"}');
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    // TODO: Tests involving deeper overrides. What should behaviour be? (deep vs. shallow, maybe a parameter for this.)
   });
 
   describe('#unset()', function(){
@@ -268,7 +288,5 @@ describe("DeltaBase", function() {
     });
 
   });
-
-//        result.$meta.filepath.should.equal(path.join(testDbPath, docsPath, '1', '1.json'));
 
 });
