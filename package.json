@@ -1,8 +1,8 @@
 {
   "name": "deltabase",
-  "description": "DeltaBase NoSQL",
-  "version": "0.0.4",
-  "author": "P Hurst",
+  "description": "DeltaBase - NoSQL filesystem database",
+  "version": "0.0.5",
+  "author": "Peter Hurst <ph@retin.ae>",
   "engines": {
     "node": "0.10.x",
     "npm": "1.4.x"
