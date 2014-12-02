@@ -3,7 +3,7 @@
   "description": "DeltaBase - NoSQL filesystem database for node.js",
   "main": "./index",
   "author": {
-    "name": "Peter Hurst",
+    "name": "Peter Hurst"
   },
   "version": "0.0.9",
   "repository": {
