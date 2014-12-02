@@ -1,8 +1,15 @@
 {
   "name": "deltabase",
-  "description": "DeltaBase - NoSQL filesystem database",
+  "description": "DeltaBase - NoSQL filesystem database for node.js",
+  "main": "./index",
+  "author": {
+    "name": "Peter Hurst",
+  },
   "version": "0.0.9",
-  "author": "Peter Hurst <ph@retin.ae>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deltaindustries/deltabase.git"
+  },
   "engines": {
     "node": "0.10.x",
     "npm": "1.4.x"
@@ -12,7 +19,6 @@
   },
   "dependencies": {
     "async": "^0.9.0",
-    "async-eventemitter": "^0.2.2",
     "lodash": "^2.4.1"
   },
   "devDependencies": {
