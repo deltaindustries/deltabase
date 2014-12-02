@@ -7,6 +7,10 @@ var path = require('path');
 var async = require('async');
 var rmdir = require('rimraf');
 
+// TODO: Most errors are being caused by file ops not flushing quick enough. Setting
+// some timeouts is a cheap hack to mitigate this. For full robustness we need to track
+// all file handles and flush the DB using fsync.
+
 describe("DeltaBase", function() {
   var testDbPath = 'testdb';
   var docsPath = 'docs';
@@ -14,26 +18,36 @@ describe("DeltaBase", function() {
   describe("#()", function() {
 
     beforeEach(function(done) {
-      rmdir('data', function() {
-        rmdir(testDbPath, done);
-      });
+      setTimeout(function(){
+        rmdir('data', function() {
+          rmdir(testDbPath, function() { setTimeout(done,100); });
+        });
+      }, 100);
     });
 
-    it('should create a new database', function() {
+    it('should create a new database', function(done) {
       deltabase(function(err, db){
         db.should.exist();
-        return fs.existsSync('data').should.equal(true);
+        fs.existsSync('data').should.equal(true);
+        done();
       });
     });
 
-    it('should create a new database in a named path', function() {
+    it('should create a new database in a named path', function(done) {
       deltabase({
         path: testDbPath
       }, function(err, db) {
         db.should.exist();
         fs.existsSync('data').should.equal(false);
         fs.existsSync('testdb').should.equal(true);
+        done();
       });
+    });
+
+    it('should create synchronously', function() {
+      var db = deltabase({ path: testDbPath });
+      db.should.exist();
+      // TODO: Some actual tests the get ops are queued
     });
 
   });
@@ -44,11 +58,13 @@ describe("DeltaBase", function() {
     testDoc = {
       foo: 'bar'
     };
-    rmdir(testDbPath, function(err,result){
-      db = deltabase({
-        path: testDbPath
-      }, done);
-    });
+    setTimeout(function(){
+      rmdir(testDbPath, function(err,result){
+        db = deltabase({
+          path: testDbPath
+        }, function() { setTimeout(done,100); });
+      });
+    }, 100);
   };
 
   describe("#set()", function() {
