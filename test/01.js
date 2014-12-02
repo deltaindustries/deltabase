@@ -7,10 +7,6 @@ var path = require('path');
 var async = require('async');
 var rmdir = require('rimraf');
 
-// TODO: Most errors are being caused by file ops not flushing quick enough. Setting
-// some timeouts is a cheap hack to mitigate this. For full robustness we need to track
-// all file handles and flush the DB using fsync.
-
 describe("DeltaBase", function() {
   var testDbPath = 'testdb';
   var docsPath = 'docs';
@@ -18,11 +14,9 @@ describe("DeltaBase", function() {
   describe("#()", function() {
 
     beforeEach(function(done) {
-      setTimeout(function(){
-        rmdir('data', function() {
-          rmdir(testDbPath, function() { setTimeout(done,100); });
-        });
-      }, 100);
+      rmdir('data', function() {
+        rmdir(testDbPath, done);
+      });
     });
 
     it('should create a new database', function(done) {
@@ -58,13 +52,11 @@ describe("DeltaBase", function() {
     testDoc = {
       foo: 'bar'
     };
-    setTimeout(function(){
-      rmdir(testDbPath, function(err,result){
-        db = deltabase({
-          path: testDbPath
-        }, function() { setTimeout(done,100); });
-      });
-    }, 100);
+    rmdir(testDbPath, function(err,result){
+      db = deltabase({
+        path: testDbPath
+      }, done);
+    });
   };
 
   describe("#set()", function() {
