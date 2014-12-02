@@ -3,6 +3,7 @@ var deltabase = require('../lib/DeltaBase');
 var fs = require('fs');
 var chai = require('chai');
 var should = chai.should();
+var expect = chai.expect;
 var path = require('path');
 var async = require('async');
 var rmdir = require('rimraf');
@@ -64,7 +65,7 @@ describe("DeltaBase", function() {
     beforeEach(initTestDb);
 
     it('should create a document without error', function(done) {
-      return db.set('1', testDoc, done);
+      db.set('1', testDoc, done);
     });
 
     it('should store the document in the file system and provide metadata', function(done) {
@@ -115,7 +116,7 @@ describe("DeltaBase", function() {
 
   });
 
-  return describe("#get()", function() {
+  describe("#get()", function() {
 
     beforeEach(function(done) {
       initTestDb(function() {
@@ -205,5 +206,30 @@ describe("DeltaBase", function() {
         done();
       });
     });
+
+  });
+
+  describe('#exists()', function(){
+    beforeEach(initTestDb);
+
+    it('should return false for a doc that doesn\'t exist', function(done){
+      db.exists("eek", function(err, result) {
+        expect(err).to.not.exist;
+        result.should.equal(false);
+        done();
+      });
+    });
+
+    it('should return true for a doc that does exist', function(done){
+      db.set('test', {foo:'bar'}, function(err,result) {
+        db.exists('test', function(err, result) {
+          expect(err).to.not.exist;
+          result.should.equal(true);
+          done();
+        });
+      });
+
+    });
+
   });
 });
