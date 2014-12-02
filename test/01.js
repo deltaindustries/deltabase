@@ -8,6 +8,11 @@ var path = require('path');
 var async = require('async');
 var rmdir = require('rimraf');
 
+// TODO: Most of the time all the tests pass, however sometimes things randomly fail. Suspect this is due to the rapid
+// creation and destroying of the filesystem and things being cached by the OS, but it smells like it could be a bug.
+// Need to design some test cases and prove why this is happening or fix the bug. Might need to monitor file handles to
+// make sure all operations are properly flushed between tests.
+
 // TODO: In general, start checking for specific types of error rather than just existence
 
 describe("DeltaBase", function() {
@@ -283,6 +288,50 @@ describe("DeltaBase", function() {
       db.unset('eek', function(err,result){
         err.should.exist;
         expect(result).to.not.exist;
+        done();
+      });
+    });
+
+  });
+
+  var testdocs = [
+    { name: 'Freda', gender: 'female', age: 35, active: true },
+    { name: 'Harry', gender: 'male', age: 40, active: false },
+    { name: 'Jill', gender: 'female', age: 30, active: false },
+    { name: 'Ted', gender: 'male', age: 50, active: true }
+  ];
+  function makeTestDocs(done) {
+    // Testing async for now. Will mean tests are less predictable. Good thing or bad thing?
+    async.each(testdocs, function(doc, cb) {
+      db.set('person_' + doc.name, doc, cb);
+    }, done);
+  }
+
+  describe('#list()', function(){
+
+    beforeEach(initTestDb);
+
+    it('should return an empty array if nothing has been stored', function(done){
+      db.list(function(err, results){
+        if (err) return done(err);
+        results.should.exist;
+        results.length.should.equal(0);
+        done();
+      });
+    });
+  });
+
+  describe('#list()', function(){
+
+    beforeEach(initTestDb);
+    beforeEach(makeTestDocs);
+
+    it('should return a list of all records', function(done){
+      db.list(function(err, results){
+        if (err) return done(err);
+        results.should.exist;
+        results.length.should.equal(4);
+        results.should.deep.include.members(testdocs);
         done();
       });
     });

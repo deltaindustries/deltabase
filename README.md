@@ -7,13 +7,14 @@ Built for testability and developer experience.
 
 Further plans include an ODM layer, client API (as Connect middleware), and an AngularJS client layer.
 
-Current features (at 0.0.7):
+Current features (at 0.0.10):
 
   - A key value document store supporting JSON objects
   - Each document is stored in the filesystem as a .json file
   - Pure Javascript and extremely light on dependencies
   - Highly testable due to avoidance of global or static state
   - Teardown is as simple as deleting a folder
+  - Basic CRUD operations are supported and tested
 
 Currently this is not recommended for a production deployment, but the aim is to fairly rapidly
 have something that could be used in production for a smallish (single-server) website. The roadmap
@@ -117,7 +118,21 @@ Will throw an error if the document doesn't exist.
     console.log(result); // null
   });
 
+### Listing documents
+
+Lists all documents in the store and returns as an array. Not very practical but until the next
+release this is the only way to perform any queries.
+
+  db.list(function(err, results) {
+    if (err) throw(err);
+    for (i in results) {
+      console.log(results[i]);
+    }
+  });
+
 ### Querying for documents
+
+Very important note: not implemented, but the following serves as a preview of the eventual API.
 
 Important note: this can get very slow since it involves reading every single document.
 If all documents have been read already and therefore cached into memory then it will still
@@ -176,7 +191,7 @@ These are long-term goals of the project. The order of implementation may change
 depending on what makes sense at the time.
 
 0.0.? - Full set of CRUD operations and rudimentary query support
-        Possibly inc/dec operations and append for lists of strings
+        
 
 0.1.0 - Secondary indexes implemented to allow fast querying
 
@@ -198,8 +213,14 @@ depending on what makes sense at the time.
 
 1.0.0 - Production readiness and API stabilisation
 
+Some more things under consideration:
+
+ - Atomic inc/dec operations and append for lists of strings
+
 Changelog
 ---------
+
+0.0.10 - Added list() method.
 
 0.0.9 - Added update() method.
 
