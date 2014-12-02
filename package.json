@@ -1,25 +1,24 @@
 {
   "name": "deltabase",
   "description": "DeltaBase NoSQL",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "P Hurst",
   "engines": {
     "node": "0.10.x",
     "npm": "1.4.x"
   },
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register"
+    "test": "mocha"
   },
   "dependencies": {
     "async": "^0.9.0",
     "async-eventemitter": "^0.2.2",
-    "express": "^4.10.2",
-    "coffee-script": "^1.8.0",
     "lodash": "^2.4.1"
   },
   "devDependencies": {
     "chai": "^1.10.0",
     "mocha": "^2.0.1",
+    "coffee-script": "^1.8.0",
     "rimraf": "^2.2.8"
   }
 }
