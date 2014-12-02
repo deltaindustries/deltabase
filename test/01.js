@@ -8,6 +8,8 @@ var path = require('path');
 var async = require('async');
 var rmdir = require('rimraf');
 
+// TODO: In general, start checking for specific types of error rather than just existence
+
 describe("DeltaBase", function() {
   var testDbPath = 'testdb';
   var docsPath = 'docs';
@@ -232,4 +234,41 @@ describe("DeltaBase", function() {
     });
 
   });
+
+  describe('#update()', function(){
+    beforeEach(initTestDb);
+  });
+
+  describe('#unset()', function(){
+    beforeEach(initTestDb);
+
+    it('should remove an existing item', function(done){
+      db.set('test', {foo:'bar'}, function(err,result){
+        var path = result.$meta.filepath;
+        db.unset('test', function(err,result){
+          if (err) return done(err);
+          expect(result).to.not.exist();
+          fs.exists(path, function(result){
+            result.should.be.false;
+            db.get('test', function(err,result){
+              err.should.exist;
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    it('should error if removing a non-existent item', function(done){
+      db.unset('eek', function(err,result){
+        err.should.exist;
+        expect(result).to.not.exist;
+        done();
+      });
+    });
+
+  });
+
+//        result.$meta.filepath.should.equal(path.join(testDbPath, docsPath, '1', '1.json'));
+
 });
