@@ -1,5 +1,6 @@
 DeltaBase
 =========
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/deltaindustries/deltabase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A NoSQL database (living on the filesystem), for node.js.
 
