@@ -217,7 +217,7 @@ Some more things under consideration:
 Changelog
 ---------
 
-0.0.12 - Fixed error with initial keys load.
+0.0.13 - Fixed error with initial keys load.
 0.0.10 - Added list() method.
 0.0.9 - Added update() method.
 0.0.8 - Added exists() and unset() methods.
