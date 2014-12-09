@@ -190,9 +190,6 @@ Roadmap
 These are long-term goals of the project. The order of implementation may change somewhat
 depending on what makes sense at the time.
 
-0.0.? - Full set of CRUD operations and rudimentary query support
-        
-
 0.1.0 - Secondary indexes implemented to allow fast querying
 
 0.2.0 - ODM framework for object construction and management
@@ -220,12 +217,10 @@ Some more things under consideration:
 Changelog
 ---------
 
+0.0.11 - Fixed error with initial keys load.
 0.0.10 - Added list() method.
-
 0.0.9 - Added update() method.
-
 0.0.8 - Added exists() and unset() methods.
-
 0.0.7 - First usable version with get/set operations only.
 
 Website and Support
