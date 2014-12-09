@@ -1,5 +1,5 @@
-
 var testDbPath = "testdb";
+var rmdir = require('rimraf');
 
 exports.init = function initTestDb(done) {
   testDoc = {
